@@ -1,0 +1,6 @@
+    # config.yaml 範例
+    local:
+      input_path: "data/users.json"
+      temp_dir: "C:\\SparkTemp"
+    production:
+      input_path: "s3a://my-bucket/production/users/"

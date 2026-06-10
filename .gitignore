@@ -1,0 +1,9 @@
+ .venv/
+ venv/
+ __pycache__/
+ *.pyc
+ reports/
+ logs/
+ C:\SparkTemp/
+ SparkTemp/
+ .pytest_cache/
