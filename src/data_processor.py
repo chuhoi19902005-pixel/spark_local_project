@@ -1,7 +1,7 @@
 from pyspark.sql import DataFrame
 import pyspark.sql.functions as F
 import logging
-
+# 測試 PyCharm GUI 推送
 logger = logging.getLogger(__name__)
 def clean_user_data(df: DataFrame) -> DataFrame:
     logger.info("Staring to clean user data")
