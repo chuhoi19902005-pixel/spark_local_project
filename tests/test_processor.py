@@ -118,3 +118,36 @@ def test_schema(spark_session):
     logger.info("Staring to check data schema")
     assert df.schema == expected_schema
     logger.info("Completed checking data schema")
+
+
+import pytest
+from src.data_processor import clean_user_data
+
+@pytest.mark.unit
+def test_simple_clean(spark_session):
+    # 快速的單元測試...
+    pass
+
+
+@pytest.mark.regression
+def test_pipeline_regression(spark_session):
+    """回歸測試：比對實際輸出與黃金輸出 (Golden Output)"""
+
+    # 1. 讀取回歸測試輸入資料
+    input_df = spark_session.read.option("multiLine", True).json("tests/regression_input.json")
+
+    # 2. 讀取事先確認 100% 正確的黃金輸出
+    golden_df = spark_session.read.option("multiLine", True).json("tests/golden_output.json")
+
+    # 3. 執行目前的數據清理程式碼
+    actual_df = clean_user_data(input_df)
+    expected_df = clean_user_data(golden_df)
+
+    # 4. 【核心對比】驗證實際輸出與黃金輸出是否 100% 一致 (結構與內容)
+    # 驗證欄位結構是否相同
+    assert actual_df.schema == expected_df.schema
+
+    # 驗證資料內容是否完全相同 (使用 Spark 的 subtract 求差集)
+    # A 減去 B 必須為 0 筆，且 B 減去 A 也必須為 0 筆，才代表完全相等
+    assert actual_df.subtract(expected_df).count() == 0
+    assert expected_df.subtract(actual_df).count() == 0
