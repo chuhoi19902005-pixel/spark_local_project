@@ -32,6 +32,9 @@ os.environ["PYSPARK_DRIVER_PYTHON"] = sys.executable
 import pytest
 from pyspark.sql import SparkSession
 from src.data_processor import clean_user_data  # 導入您的數據清理函數
+import logging
+
+logger = logging.getLogger(__name__)
 
 @pytest.fixture(scope="session")
 def spark_session():
@@ -77,7 +80,6 @@ def test_clean_user_data(spark_session):
 
     # ---------------- 驗證斷言 (Assertions) ----------------
     # 1. 驗證負數是否被過濾（預期只剩下 2 筆數據）
-
     assert len(results) == 2
 
     # 2. 驗證 Bob 的年齡是否被正確補 0
@@ -107,10 +109,12 @@ expected_schema = StructType([
     StructField("name", StringType(), True)
 ])
 
-
+# 測試 PyCharm GUI 推送
 def test_schema(spark_session):
     df = spark_session.read \
         .option("multiLine", True) \
         .json("tests/data.json")
     # 驗證資料表的結構是否與預期完全一致
+    logger.info("Staring to check data schema")
     assert df.schema == expected_schema
+    logger.info("Completed checking data schema")
