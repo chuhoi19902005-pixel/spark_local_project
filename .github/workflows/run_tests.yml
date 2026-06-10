@@ -1,34 +1,30 @@
-# 1. 定義這條流水線的名稱
 name: PySpark Auto Validation CI
 
-# 2. 觸發條件：當有程式碼 Push 或 Pull Request 到 main 核心分支時觸發
 on:
   push:
     branches: [ main, master ]
   pull_request:
     branches: [ main, master ]
 
-# 3. 執行的工作內容
 jobs:
   pyspark-testing:
-    # 指定使用 GitHub 提供的最新版 Ubuntu Linux 虛擬機
     runs-on: ubuntu-latest
 
     steps:
-      # 步驟一：將您的專案程式碼複製（Checkout）到虛擬機中
+      # 步驟一：複製 GitHub 倉庫程式碼 (升級至 v4)
       - name: Checkout repository code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      # 步驟二：安裝 Java 17 (因為 PySpark 執行必備)
+      # 步驟二：安裝 Java 17 (升級至 v4)
       - name: Set up JDK 17
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           java-version: '17'
-          distribution: 'temurin' # 採用與我們本地相同的 Temurin 核心
+          distribution: 'temurin'
 
-      # 步驟三：安裝 Python 3.11
+      # 步驟三：安裝 Python 3.11 (升級至 v5)
       - name: Set up Python 3.11
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
@@ -38,16 +34,15 @@ jobs:
           python -m pip install --upgrade pip
           pip install pyspark pytest pytest-html
 
-      # 步驟五：執行測試 (這會自動讀取 pytest.ini，並在 reports/ 產生報告)
+      # 步驟五：執行測試
       - name: Execute Pytest Suite
         run: |
           python -m pytest
 
-      # 步驟六：【進階加分】不論測試成功或失敗，都將產生的 HTML 測試報告打包上傳
-      # 這樣您就可以在瀏覽器中下載這份報告
+      # 步驟六：上傳測試報告 (升級至 v4，解決 v3 被廢棄的錯誤)
       - name: Upload Test Report Artifact
-        if: always() # 確保測試失敗時也能上傳報告，方便排查錯誤
-        uses: actions/upload-artifact@v3
+        if: always()
+        uses: actions/upload-artifact@v4
         with:
-          name: pyspark-test-report # 下載時的壓縮檔名稱
-          path: reports/            # 指定要上傳的資料夾路徑
+          name: pyspark-test-report
+          path: reports/
